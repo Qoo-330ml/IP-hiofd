@@ -1,0 +1,4 @@
+node_modules/
+.playwright/
+__pycache__/
+*.pyc

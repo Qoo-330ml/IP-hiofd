@@ -1,0 +1,15 @@
+{
+  "name": "ip-hiofd",
+  "version": "1.0.0",
+  "description": "已按页面真实交互实现： - 输入框：`#queryIp` - 按钮：`#queryBtn` - 点击后读取：   - 网络服务商 `#resultIsp`   - 位置(IP归属地) `#resultLocation`   - 区 `#resultDistrict`   - 街道 `#resultStreet`",
+  "main": "common-main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
+}
