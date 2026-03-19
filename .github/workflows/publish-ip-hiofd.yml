@@ -32,18 +32,15 @@ jobs:
 
       - name: Build package
         run: |
-          cd IP-hiofd
-          python -m build
+          python -m build IP-hiofd
 
       - name: Check package
         run: |
-          cd IP-hiofd
-          python -m twine check dist/*
+          python -m twine check IP-hiofd/dist/*
 
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_IP_HIOFD }}
         run: |
-          cd IP-hiofd
-          python -m twine upload dist/*
+          python -m twine upload IP-hiofd/dist/*
