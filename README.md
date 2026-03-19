@@ -34,6 +34,7 @@ python -m playwright install chromium
 ```bash
 ip-hiofd 61.175.188.57
 ip-hiofd 61.175.188.57 --json
+ip-hiofd 61.175.188.57 --timeout 120 --retries 5 --retry-delay 1.5
 ```
 
 ## Python 作为库调用

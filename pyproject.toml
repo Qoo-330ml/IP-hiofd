@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ip-hiofd"
-version = "0.1.1"
+version = "0.1.2"
 description = "Query IP geolocation/ISP via real browser interaction on tool.hiofd.com"
 readme = "README.md"
 requires-python = ">=3.8"

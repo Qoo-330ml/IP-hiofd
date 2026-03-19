@@ -1,5 +1,18 @@
 # IP-hiofd 项目更新说明
 
+## v0.1.2（稳定性修复）
+
+### 修复点
+- 修复偶发 `query_ip` 与 `result_ip` 不一致的问题（页面旧结果脏读）。
+- 查询触发改为单次点击，避免 click + Enter 双触发竞态。
+- 等待条件升级为：`#resultIpAddress` 必须与输入 IP 完全一致。
+- 内置重试机制（默认 3 次，间隔 1 秒）。
+
+### CLI 新增参数
+- `--timeout`（默认 90）
+- `--retries`（默认 3）
+- `--retry-delay`（默认 1.0）
+
 ## 版本升级：纯 Python Playwright 实现
 
 ### 更新内容

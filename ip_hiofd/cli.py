@@ -10,10 +10,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="IP-hiofd Python API/CLI")
     parser.add_argument("ip", help="IPv4 地址，例如 61.175.188.57")
     parser.add_argument("--json", action="store_true", help="JSON 输出")
+    parser.add_argument("--timeout", type=int, default=90, help="超时秒数，默认 90")
+    parser.add_argument("--retries", type=int, default=3, help="重试次数，默认 3")
+    parser.add_argument("--retry-delay", type=float, default=1.0, help="重试间隔秒，默认 1.0")
     args = parser.parse_args()
 
     client = HiofdIpClient()
-    result = client.lookup(args.ip)
+    result = client.lookup(
+        args.ip,
+        timeout_sec=args.timeout,
+        retries=args.retries,
+        retry_delay_sec=args.retry_delay,
+    )
 
     if args.json:
         print(json.dumps(result.__dict__, ensure_ascii=False, indent=2))
