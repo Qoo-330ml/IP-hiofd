@@ -1,5 +1,24 @@
 # IP-hiofd 项目更新说明
 
+## v0.2.0（纯 requests 版本）
+
+### 重大变更
+- 去除 Playwright/Chromium 依赖，改为纯 `requests` 直连 `toola.hiofd.com/router/rest`。
+- 本地生成请求校验字段：`k / t / x / r`。
+- 保留原有结果结构与 CLI 参数（`--timeout --retries --retry-delay`）。
+
+### 依赖变化
+- 移除：`playwright`
+- 新增：`requests>=2.31.0`
+
+### 兼容性
+- 对外 API 入口保持不变：`HiofdIpClient().lookup(ip)` 与 `lookup_ip(ip)`。
+- 输出字段保持不变：`query_ip/result_ip/isp/location/district/street`。
+
+### 风险提示
+- 当前算法基于目标站现行前端逻辑逆向得到；若站点调整风控参数生成规则，需同步更新。
+- 建议在生产环境保留可回退方案（例如浏览器自动化分支）。
+
 ## v0.1.2（稳定性修复）
 
 ### 修复点
@@ -12,62 +31,3 @@
 - `--timeout`（默认 90）
 - `--retries`（默认 3）
 - `--retry-delay`（默认 1.0）
-
-## 版本升级：纯 Python Playwright 实现
-
-### 更新内容
-- 新增 `hiofd_client.py` - 完全替代原有的 Node.js 依赖
-- 删除对 `hiofd_browser.js` 的依赖
-
-### 主要改进
-
-#### 1. 环境简化
-- **不再需要 Node.js 环境** - 完全使用 Python
-- **统一的依赖管理** - 只需要 Python 和 playwright
-
-#### 2. 代码质量提升
-- **完整的类型提示** - 使用 Python 3.10+ 的 `from __future__ import annotations`
-- **数据结构化** - 使用 `dataclass` 封装查询结果
-- **健壮的错误处理** - 包含 IP 验证和结果校验
-
-#### 3. 功能增强
-- **智能等待机制** - 使用 `wait_for_function` 等待查询完成
-- **完整的事件触发** - 模拟真实的浏览器交互
-- **结果验证** - 确保查询结果与输入 IP 一致
-
-### 使用示例
-
-```python
-from hiofd_client import lookup_ip
-
-result = lookup_ip("8.8.8.8")
-print(f"ISP: {result.isp}")
-print(f"位置: {result.location}")
-```
-
-### 命令行使用
-
-```bash
-# 基本查询
-python hiofd_client.py 8.8.8.8
-
-# JSON 格式输出
-python hiofd_client.py 8.8.8.8 --json
-
-# 自定义超时
-python hiofd_client.py 8.8.8.8 --timeout 30
-```
-
-### 向后兼容性
-
-新的 `hiofd_client.py` 提供了与原有 `hiofd_browser.py` 类似的功能，但具有更好的稳定性和更完整的特性。
-
-### 依赖要求
-- Python 3.7+
-- playwright >= 1.40.0
-
-### 安装 playwright
-```bash
-pip install playwright
-playwright install chromium
-```

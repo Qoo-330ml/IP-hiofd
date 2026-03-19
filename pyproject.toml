@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ip-hiofd"
-version = "0.1.2"
-description = "Query IP geolocation/ISP via real browser interaction on tool.hiofd.com"
+version = "0.2.0"
+description = "Query IP geolocation/ISP via direct requests to toola.hiofd.com (no browser dependency)"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
   { name = "Qoo-330ml" }
 ]
 license = { text = "MIT" }
-keywords = ["ip", "geolocation", "hiofd", "playwright"]
+keywords = ["ip", "geolocation", "hiofd", "requests"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -20,7 +20,7 @@ classifiers = [
   "Operating System :: OS Independent"
 ]
 dependencies = [
-  "playwright>=1.45.0"
+  "requests>=2.31.0"
 ]
 
 [project.urls]

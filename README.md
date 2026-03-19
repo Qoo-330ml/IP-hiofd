@@ -1,6 +1,6 @@
 # IP-hiofd
 
-通过 `https://tool.hiofd.com/ip/` 的真实页面交互查询 IP 信息。
+通过 `https://toola.hiofd.com/router/rest` 直连查询 IP 信息（纯 requests 版本，不依赖浏览器）。
 
 输出字段：
 - 网络服务商
@@ -16,8 +16,6 @@
 pip install ip-hiofd
 ```
 
-> 运行前请安装 Python Playwright 浏览器依赖（无需 Node.js）。
-
 ### 开发环境安装
 
 ```bash
@@ -26,7 +24,6 @@ cd IP-hiofd
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python -m playwright install chromium
 ```
 
 ## Python 命令行
@@ -34,7 +31,7 @@ python -m playwright install chromium
 ```bash
 ip-hiofd 61.175.188.57
 ip-hiofd 61.175.188.57 --json
-ip-hiofd 61.175.188.57 --timeout 120 --retries 5 --retry-delay 1.5
+ip-hiofd 61.175.188.57 --timeout 30 --retries 5 --retry-delay 1.5
 ```
 
 ## Python 作为库调用
@@ -59,9 +56,11 @@ print(result)
 ## 目录说明
 
 - `ip_hiofd/`：Python 包
-- `ip_hiofd/client.py`：纯 Python Playwright 浏览器自动化实现
+- `ip_hiofd/client.py`：纯 requests 实现
 - `ip_hiofd_api.py`：兼容旧用法的 Python CLI 封装
 
-## 备注
+## 说明
 
-该站后端接口对直连请求有风控校验（444），本项目采用“真实页面流程自动化”来保证可用性与结果一致性。
+- 本版本已去除 Playwright/Chromium 依赖。
+- 请求参数 `k/t/x/r` 由本地算法生成并直连查询。
+- 若目标站风控策略调整，建议升级版本或临时回退浏览器自动化方案。
