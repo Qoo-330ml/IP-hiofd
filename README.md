@@ -8,27 +8,30 @@
 - 区
 - 街道
 
-## 目录说明
-
-- `hiofd_browser.js`：底层浏览器自动化脚本（Playwright）
-- `ip_hiofd/`：Python 可调用库
-- `ip_hiofd_api.py`：Python CLI 封装
-
 ## 安装
 
+### 作为 Python 包安装
+
 ```bash
-cd ~/Fnos/项目/IP-hiofd
+pip install ip-hiofd
+```
+
+> 运行前请确保本机可用 Node.js，并已安装 Playwright 浏览器依赖。
+
+### 开发环境安装
+
+```bash
+git clone https://github.com/Qoo-330ml/IP-hiofd
+cd IP-hiofd
 npm install
 npx playwright install chromium
 ```
 
-> Python 端仅用标准库（通过 subprocess 调用 node 脚本）。
-
-## Python 作为命令行使用
+## Python 命令行
 
 ```bash
-python ip_hiofd_api.py 61.175.188.57
-python ip_hiofd_api.py 61.175.188.57 --json
+ip-hiofd 61.175.188.57
+ip-hiofd 61.175.188.57 --json
 ```
 
 ## Python 作为库调用
@@ -36,7 +39,7 @@ python ip_hiofd_api.py 61.175.188.57 --json
 ```python
 from ip_hiofd import HiofdIpClient
 
-client = HiofdIpClient(project_dir='~/Fnos/项目/IP-hiofd')
+client = HiofdIpClient()
 result = client.lookup('61.175.188.57')
 print(result.isp, result.location, result.district, result.street)
 ```
@@ -46,9 +49,15 @@ print(result.isp, result.location, result.district, result.street)
 ```python
 from ip_hiofd.client import lookup_ip
 
-result = lookup_ip('117.152.147.151', project_dir='~/Fnos/项目/IP-hiofd')
+result = lookup_ip('117.152.147.151')
 print(result)
 ```
+
+## 目录说明
+
+- `ip_hiofd/`：Python 包
+- `ip_hiofd/hiofd_browser.js`：底层浏览器自动化脚本（Playwright）
+- `ip_hiofd_api.py`：兼容旧用法的 Python CLI 封装
 
 ## 备注
 

@@ -30,7 +30,7 @@ class HiofdIpClient:
     """
 
     def __init__(self, project_dir: str | Path | None = None, node_bin: str = "node"):
-        base = Path(project_dir) if project_dir else Path(__file__).resolve().parents[1]
+        base = Path(project_dir) if project_dir else Path(__file__).resolve().parent
         self.project_dir = base
         self.node_bin = node_bin
         self.script_path = self.project_dir / "hiofd_browser.js"

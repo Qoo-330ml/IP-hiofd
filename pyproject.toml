@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ip-hiofd"
+version = "0.1.0"
+description = "Query IP geolocation/ISP via real browser interaction on tool.hiofd.com"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Qoo-330ml" }
+]
+license = { text = "MIT" }
+keywords = ["ip", "geolocation", "hiofd", "playwright"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Qoo-330ml/IP-hiofd"
+Repository = "https://github.com/Qoo-330ml/IP-hiofd"
+Issues = "https://github.com/Qoo-330ml/IP-hiofd/issues"
+
+[project.scripts]
+ip-hiofd = "ip_hiofd.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["ip_hiofd*"]
+
+[tool.setuptools.package-data]
+ip_hiofd = ["hiofd_browser.js"]
