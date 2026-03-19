@@ -1,8 +1,5 @@
 name: Publish IP-hiofd to PyPI
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-
 on:
   push:
     branches:
@@ -11,6 +8,7 @@ on:
       - 'ip_hiofd/**'
       - 'ip_hiofd_api.py'
       - 'pyproject.toml'
+      - 'MANIFEST.in'
       - 'README.md'
       - '.github/workflows/publish-ip-hiofd.yml'
   workflow_dispatch:
@@ -18,34 +16,37 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Clone repository (no checkout action)
+        run: |
+          git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" repo
+          cd repo
+          git checkout "${{ github.sha }}"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Show Python version
+        run: python3 --version
 
       - name: Install dependencies
+        working-directory: repo
         run: |
-          python -m pip install --upgrade pip
-          pip install build twine
+          python3 -m pip install --upgrade pip
+          python3 -m pip install build twine
 
       - name: Build package
+        working-directory: repo
         run: |
-          python -m build
+          python3 -m build
 
       - name: Check package
+        working-directory: repo
         run: |
-          python -m twine check dist/*
+          python3 -m twine check dist/*
 
       - name: Publish to PyPI
+        working-directory: repo
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_IP_HIOFD }}
         run: |
-          python -m twine upload --skip-existing dist/*
+          python3 -m twine upload --skip-existing dist/*
