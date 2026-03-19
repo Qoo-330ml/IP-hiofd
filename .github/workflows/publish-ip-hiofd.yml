@@ -5,25 +5,25 @@ on:
     branches:
       - main
     paths:
-      - 'IP-hiofd/**'
+      - 'ip_hiofd/**'
+      - 'ip_hiofd_api.py'
+      - 'pyproject.toml'
+      - 'README.md'
       - '.github/workflows/publish-ip-hiofd.yml'
+  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -32,15 +32,15 @@ jobs:
 
       - name: Build package
         run: |
-          python -m build IP-hiofd
+          python -m build
 
       - name: Check package
         run: |
-          python -m twine check IP-hiofd/dist/*
+          python -m twine check dist/*
 
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN_IP_HIOFD }}
         run: |
-          python -m twine upload IP-hiofd/dist/*
+          python -m twine upload --skip-existing dist/*
