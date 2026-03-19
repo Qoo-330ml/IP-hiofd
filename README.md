@@ -16,15 +16,17 @@
 pip install ip-hiofd
 ```
 
-> 运行前请确保本机可用 Node.js，并已安装 Playwright 浏览器依赖。
+> 运行前请安装 Python Playwright 浏览器依赖（无需 Node.js）。
 
 ### 开发环境安装
 
 ```bash
 git clone https://github.com/Qoo-330ml/IP-hiofd
 cd IP-hiofd
-npm install
-npx playwright install chromium
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m playwright install chromium
 ```
 
 ## Python 命令行
@@ -56,7 +58,7 @@ print(result)
 ## 目录说明
 
 - `ip_hiofd/`：Python 包
-- `ip_hiofd/hiofd_browser.js`：底层浏览器自动化脚本（Playwright）
+- `ip_hiofd/client.py`：纯 Python Playwright 浏览器自动化实现
 - `ip_hiofd_api.py`：兼容旧用法的 Python CLI 封装
 
 ## 备注

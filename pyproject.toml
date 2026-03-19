@@ -19,7 +19,9 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent"
 ]
-dependencies = []
+dependencies = [
+  "playwright>=1.45.0"
+]
 
 [project.urls]
 Homepage = "https://github.com/Qoo-330ml/IP-hiofd"
@@ -36,4 +38,4 @@ include-package-data = true
 include = ["ip_hiofd*"]
 
 [tool.setuptools.package-data]
-ip_hiofd = ["hiofd_browser.js"]
+ip_hiofd = []

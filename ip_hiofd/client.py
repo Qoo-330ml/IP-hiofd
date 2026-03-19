@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import json
 import re
-import subprocess
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Optional
+
+from playwright.sync_api import sync_playwright
+
 
 IPV4_RE = re.compile(
     r"^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$"
@@ -24,18 +23,7 @@ class IpLookupResult:
 
 
 class HiofdIpClient:
-    """Hiofd IP 查询客户端（基于真实浏览器自动化脚本）。
-
-    通过调用同目录下的 `hiofd_browser.js`，获取页面查询结果。
-    """
-
-    def __init__(self, project_dir: str | Path | None = None, node_bin: str = "node"):
-        base = Path(project_dir) if project_dir else Path(__file__).resolve().parent
-        self.project_dir = base
-        self.node_bin = node_bin
-        self.script_path = self.project_dir / "hiofd_browser.js"
-        if not self.script_path.exists():
-            raise FileNotFoundError(f"未找到脚本: {self.script_path}")
+    """Hiofd IP 查询客户端（纯 Python Playwright 实现）。"""
 
     @staticmethod
     def _validate_ip(ip: str) -> str:
@@ -47,38 +35,49 @@ class HiofdIpClient:
     def lookup(self, ip: str, timeout_sec: int = 90) -> IpLookupResult:
         ip = self._validate_ip(ip)
 
-        proc = subprocess.run(
-            [self.node_bin, str(self.script_path), ip],
-            cwd=str(self.project_dir),
-            capture_output=True,
-            text=True,
-            timeout=timeout_sec,
-            check=False,
-        )
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(
+                "https://tool.hiofd.com/ip/",
+                wait_until="domcontentloaded",
+                timeout=timeout_sec * 1000,
+            )
 
-        if proc.returncode != 0:
-            stderr = (proc.stderr or "").strip()
-            stdout = (proc.stdout or "").strip()
-            raise RuntimeError(f"查询失败(returncode={proc.returncode}): {stderr or stdout}")
+            my_ip = (page.text_content("#myIp") or "").strip()
 
-        out = (proc.stdout or "").strip()
-        if not out:
-            raise RuntimeError("查询失败：无输出")
+            page.click("#queryIp")
+            page.fill("#queryIp", ip)
+            page.dispatch_event("#queryIp", "input")
+            page.dispatch_event("#queryIp", "change")
 
-        try:
-            data = json.loads(out)
-        except json.JSONDecodeError as e:
-            raise RuntimeError(f"查询失败：输出不是 JSON: {out[:300]}") from e
+            page.click("#queryBtn")
+            page.press("#queryIp", "Enter")
 
-        result = IpLookupResult(
-            query_ip=str(data.get("queryIp") or ip),
-            result_ip=str(data.get("resultIp") or ""),
-            isp=str(data.get("isp") or ""),
-            location=str(data.get("location") or ""),
-            district=str(data.get("district") or ""),
-            street=str(data.get("street") or ""),
-            my_ip=str(data.get("myIp") or ""),
-        )
+            page.wait_for_function(
+                """
+                () => {
+                    const v = (document.querySelector('#resultIpAddress')?.textContent || '').trim();
+                    return v && v !== '正在查询...' && v !== '-';
+                }
+                """,
+                timeout=timeout_sec * 1000,
+            )
+            page.wait_for_timeout(1500)
+
+            def get_text(selector: str) -> str:
+                return (page.text_content(selector) or "").strip()
+
+            result = IpLookupResult(
+                query_ip=ip,
+                result_ip=get_text("#resultIpAddress"),
+                isp=get_text("#resultIsp"),
+                location=get_text("#resultLocation"),
+                district=get_text("#resultDistrict"),
+                street=get_text("#resultStreet"),
+                my_ip=my_ip,
+            )
+            browser.close()
 
         if result.result_ip and result.result_ip != ip:
             raise RuntimeError(
@@ -88,5 +87,5 @@ class HiofdIpClient:
         return result
 
 
-def lookup_ip(ip: str, project_dir: Optional[str | Path] = None) -> IpLookupResult:
-    return HiofdIpClient(project_dir=project_dir).lookup(ip)
+def lookup_ip(ip: str) -> IpLookupResult:
+    return HiofdIpClient().lookup(ip)
