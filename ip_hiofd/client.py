@@ -13,6 +13,20 @@ IPV4_RE = re.compile(
     r"^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$"
 )
 
+IPV6_RE = re.compile(
+    r"^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,7}:$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}$|"
+    r"^[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})$|"
+    r"^:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)$|"
+    r"^(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$|"
+    r"^(?:(?:[0-9a-fA-F]{1,4}:){1,6}|:):(?:[0-9a-fA-F]{1,4}:){0,4}(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$"
+)
+
 
 @dataclass
 class IpLookupResult:
@@ -22,6 +36,8 @@ class IpLookupResult:
     location: str
     district: str
     street: str
+    latitude: str = ""
+    longitude: str = ""
     my_ip: str = ""
 
 
@@ -47,8 +63,8 @@ class HiofdIpClient:
     @staticmethod
     def _validate_ip(ip: str) -> str:
         ip = ip.strip()
-        if not IPV4_RE.match(ip):
-            raise ValueError(f"非法 IPv4: {ip}")
+        if not (IPV4_RE.match(ip) or IPV6_RE.match(ip)):
+            raise ValueError(f"非法 IP 地址: {ip}")
         return ip
 
     @classmethod
@@ -132,6 +148,8 @@ class HiofdIpClient:
             location=location,
             district=str(data.get("district") or ""),
             street=str(data.get("street") or ""),
+            latitude=str(data.get("latitude") or ""),
+            longitude=str(data.get("longitude") or ""),
             my_ip="",
         )
 
